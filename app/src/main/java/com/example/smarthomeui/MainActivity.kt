@@ -3,25 +3,20 @@ package com.example.smarthomeui
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
 import com.example.smarthomeui.ui.theme.SmartHomeUiTheme
+import kotlin.random.Random
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,7 +27,26 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background,
                 ) {
 
-                    MainScreen()
+                    val boxColor  = remember {
+                        mutableStateOf(Color.Green)
+                    }
+                    Column {
+                        MainColorBox(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(0.5f)
+                                .background(Color.Red)
+                            ) {
+                            boxColor.value = it
+                        }
+                        ColorChangingBox(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .weight(0.5f)
+                                .background(boxColor.value)
+                        )
+                    }
+
                 }
             }
         }
@@ -41,44 +55,30 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun MainScreen() {
+fun MainColorBox(
+    modifier: Modifier,
+    onMainBoxClicked: (Color) -> Unit
+) {
 
     Box(
-        modifier = Modifier.fillMaxSize()
+        modifier = modifier.clickable {
+            onMainBoxClicked(
+                Color(
+                    Random.nextFloat(),
+                    Random.nextFloat(),
+                    Random.nextFloat(),
+                )
+            )
+        }
     ) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-
-        ) {
-            Spacer(modifier = Modifier.height(16.dp))
-            ProfileImage()
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(text = "Hello, Emmamuel", fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 16.dp))
-            Spacer(modifier = Modifier.height(16.dp))
-            EnergyConsumptionCard()
-            ChipSection()
-            SpecificRoomCardSection()
-        }
     }
-
-
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
+fun ColorChangingBox(modifier: Modifier) {
+
+    Box(
         modifier = modifier
     )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    SmartHomeUiTheme {
-        Greeting("Android")
-    }
 }
